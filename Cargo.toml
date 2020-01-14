@@ -1,0 +1,33 @@
+[package]
+name = "page"
+version = "0.1.0-alpha.0"
+authors = ["Zatoichi Labs <admin@zatoichi-labs.com>"]
+license = "Apache-2.0"
+edition = "2018"
+
+[lib]
+name = "page"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+age = "0.1.1"
+secrecy = "0.5"
+
+[dependencies.pyo3]
+version = "0.8.5"
+features = ["extension-module"]
+
+[package.metadata.maturin]
+requires-python = ">=3.5,<4"
+project-url = ["https://github.com/zatoichi-labs/page"]
+classifier = [
+    'Development Status :: 1 - Planning',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Natural Language :: English',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+]
