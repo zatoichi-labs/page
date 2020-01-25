@@ -1,0 +1,8 @@
+# Python
+.pytest_cache/
+.python-version
+__pycache__/
+
+# Build files
+target/
+rust-toolchain
