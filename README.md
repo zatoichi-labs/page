@@ -24,9 +24,9 @@ The Rust implementation is available at
 You can use page's encryption functions in two ways,
 either using identity-based encryption:
 ```python
-from page import encrypt, decrypt, Identity, Recipient
+from page import encrypt, decrypt, Identity
 
-rc = Recipient("age1ppvqwzgdynzjmy04drg9h55xv0clhr4frtgnvy4uwkvk4jf4gu0sf63nar")
+rc = "age1ppvqwzgdynzjmy04drg9h55xv0clhr4frtgnvy4uwkvk4jf4gu0sf63nar"
 id = Identity("""
 AGE-SECRET-KEY-1CZP3Q5EC25V8SK003Y8FYQNH7JPCCVMCRMZYSRX7E2JV3U0C09PSS5MEGZ
 """)
@@ -50,14 +50,12 @@ Files can be encrypted to multiple recipients.
 Every recipient will be able to decrypt the file.
 
 ```python
-from page import encrypt, decrypt, Identity, Recipient
+from page import encrypt, decrypt, Identity
 
-rc1 = Recipient("...")
-rc2 = Recipient("...")
-id1 = Identity("...")
-id2 = Identity("...")
+id1 = Identity.generate()
+id2 = Identity.generate()
 
-encrypted_msg = encrypt(b"My Important Message", public_keys=[rc1, rc2])
+encrypted_msg = encrypt(b"My Important Message", public_keys=[*id1.public(), *id2.public()])
 msg1 = decrypt(encrypted_msg, private_keys=[id1])
 msg2 = decrypt(encrypted_msg, private_keys=[id2])
 assert msg1 == msg2
