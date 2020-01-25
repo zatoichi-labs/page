@@ -63,40 +63,6 @@ msg2 = decrypt(encrypted_msg, private_keys=[id2])
 assert msg1 == msg2
 ```
 
-### Passphrases
-
-Page can be used to generate a secure passphrase.
-
-```bash
-from page import generate_passphrase
-
-# Creates 10 words randomly chosen from BIP39 wordlist
-print(f"Secure passphrase: {generate_passphrase()}")
-# Secure passphrase: kiwi-general-undo-bubble-dwarf-dizzy-fame-side-sunset-sibling
-```
-
-### SSH keys
-
-page also supports encrypting to `ssh-rsa` and `ssh-ed25519` SSH public keys,
-and decrypting with the respective private key.
-
-```
-from page import encrypt, decrypt, Identity, Recipient
-
-rc = Recipient.from_file("~/.ssh/id_ed25519.pub")
-id = Identity.from_file("~/.ssh/id_ed25519")
-
-encrypted_msg = encrypt(b"My Important Message", public_keys=[rc])
-msg = decrypt(encrypted_msg, private_keys=[id])
-assert msg == b"My Important Message"
-```
-
-`ssh-rsa` support is currently behind the `unstable` feature flag.
-
-Note that SSH key support employs more complex cryptography, and embeds a public
-key tag in the encrypted message, making it possible to track files that are
-encrypted to a specific public key.
-
 ## Installation
 
 You can install page using pip:
