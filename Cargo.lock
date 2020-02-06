@@ -691,7 +691,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "page"
-version = "0.1.0-alpha.0"
+version = "0.1.0-alpha.1"
 dependencies = [
  "age 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "pyo3 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)",
