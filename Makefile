@@ -12,9 +12,12 @@ test: build
 PYPI_TOKEN = $(shell grep -oP "password = \K.*" ~/.pypirc)
 PYPI_LOGIN =--username __token__ --password $(PYPI_TOKEN)
 
+PYTHON_VERSION_TRIPLE = $(subst ., ,$(lastword $(shell python -V)))
+PYTHON_VERSION = python$(word 1,$(PYTHON_VERSION_TRIPLE)).$(word 2,$(PYTHON_VERSION_TRIPLE))
+
 publish:
 	echo "nightly" > rust-toolchain
-	maturin publish -i python3.6 $(MATURIN_ARGS) $(PYPI_LOGIN)
+	maturin publish -i $(PYTHON_VERSION) $(MATURIN_ARGS) $(PYPI_LOGIN)
 	rm rust-toolchain
 
 clean:
