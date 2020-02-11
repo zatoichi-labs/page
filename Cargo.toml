@@ -10,8 +10,8 @@ name = "page"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-age = "0.1.1"
-secrecy = "0.5"
+age = "0.3.0"
+secrecy = "0.6"
 
 [dependencies.pyo3]
 version = "0.8.5"

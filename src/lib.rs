@@ -1,5 +1,5 @@
 use age;
-use secrecy::Secret;
+use secrecy::{ExposeSecret, Secret};
 use std::io::{Read, Write};
 use std::str::FromStr;
 
@@ -60,7 +60,7 @@ impl Identity {
 
     #[staticmethod]
     pub fn generate() -> PyResult<Self> {
-        let secret = age::SecretKey::generate().to_str();
+        let secret = age::SecretKey::generate().to_string().expose_secret().to_owned();
         let keys = age::keys::Identity::from_buffer(secret.as_bytes())
             .map_err(|_e| PageUsageError::py_err("Could not parse keys from secret!"))?;
         Ok(Self {
@@ -73,7 +73,7 @@ impl Identity {
         self.keys.iter().map(|id| {
             match id.key() {
                 age::keys::IdentityKey::Unencrypted(key) =>
-                    Some(key.to_public().to_str()),
+                    Some(key.to_public().to_string()),
                 _ => None,
             }
         })
@@ -108,7 +108,7 @@ pub fn encrypt<'p>(py: Python<'p>,
     };
     let mut encrypted = vec![];
     {
-        let mut writer = encryptor.wrap_output(&mut encrypted, false)?;
+        let mut writer = encryptor.wrap_output(&mut encrypted, age::Format::Binary)?;
         writer.write_all(message)?;
         writer.finish()?;
     };
@@ -129,17 +129,17 @@ pub fn decrypt<'p>(py: Python<'p>,
                         .expect("This is safe because we have already parsed secret")
                 })
                 .collect();
-            age::Decryptor::Keys(keys)
+            age::Decryptor::with_identities(keys)
         },
         (None, Some(passphrase)) =>
-            age::Decryptor::Passphrase(Secret::new(passphrase)),
+            age::Decryptor::with_passphrase(Secret::new(passphrase)),
         _ => return Err(
             PageUsageError::py_err(
                 "Must specify keyword arg of: passphrase or private_keys (but not both)"
             )
         ),
     };
-    let mut reader = decryptor.trial_decrypt(message, |_| None)
+    let mut reader = decryptor.trial_decrypt(message)
         .map_err(|_e| PageUsageError::py_err("Decryption didn't work!"))?;
     let mut decrypted = vec![];
     reader.read_to_end(&mut decrypted)
