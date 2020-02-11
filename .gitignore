@@ -4,5 +4,6 @@
 __pycache__/
 
 # Build files
+Cargo.lock
 target/
 rust-toolchain
