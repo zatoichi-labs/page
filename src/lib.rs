@@ -96,10 +96,10 @@ pub fn encrypt<'p>(py: Python<'p>,
                 .collect();
             let keys = keys
                 .map_err(|_e| PageUsageError::py_err("Could not parse keys from string!"))?;
-            age::Encryptor::Keys(keys)
+            age::Encryptor::with_recipients(keys)
         },
         (None, Some(passphrase)) =>
-            age::Encryptor::Passphrase(Secret::new(passphrase)),
+            age::Encryptor::with_user_passphrase(Secret::new(passphrase)),
         _ => return Err(
             PageUsageError::py_err(
                 "Must specify keyword arg of: passphrase or public_keys (but not both)"
@@ -121,26 +121,30 @@ pub fn decrypt<'p>(py: Python<'p>,
                    private_keys: Option<Vec<Identity>>,
                    passphrase: Option<String>,
 ) -> PyResult<&'p PyBytes> {
-    let decryptor = match (private_keys, passphrase) {
-        (Some(keys), None) => {
+    let decryptor = age::Decryptor::new(message).unwrap();
+    let mut reader = match (decryptor, private_keys, passphrase) {
+        (age::Decryptor::Recipients(d), Some(keys), None) => {
             let keys: Vec<age::keys::Identity> = keys.iter()
                 .flat_map(|k| {
                     age::keys::Identity::from_buffer(k.secret.as_bytes())
                         .expect("This is safe because we have already parsed secret")
                 })
                 .collect();
-            age::Decryptor::with_identities(keys)
+            d.decrypt(keys.as_slice())
         },
-        (None, Some(passphrase)) =>
-            age::Decryptor::with_passphrase(Secret::new(passphrase)),
-        _ => return Err(
+        (age::Decryptor::Passphrase(d), None, Some(passphrase)) =>
+            d.decrypt(&Secret::new(passphrase), None),
+        (_, None, None) | (_, Some(_), Some(_)) => return Err(
             PageUsageError::py_err(
                 "Must specify keyword arg of: passphrase or private_keys (but not both)"
             )
         ),
-    };
-    let mut reader = decryptor.trial_decrypt(message)
-        .map_err(|_e| PageUsageError::py_err("Decryption didn't work!"))?;
+        _ => return Err(
+            PageUsageError::py_err(
+                "Mismatch between encryption type and supplied decryption key or passphrase"
+            )
+        ),
+    }.map_err(|_e| PageUsageError::py_err("Decryption didn't work!"))?;
     let mut decrypted = vec![];
     reader.read_to_end(&mut decrypted)
         .map_err(|_e| PageUsageError::py_err("Reading didn't work!"))?;
