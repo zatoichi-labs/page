@@ -4,7 +4,6 @@ use std::io::{Read, Write};
 use std::str::FromStr;
 
 use pyo3::prelude::*;
-use pyo3::types::PyAny;
 use pyo3::types::PyBytes;
 use pyo3::wrap_pyfunction;
 use pyo3::create_exception;
@@ -20,12 +19,8 @@ pub struct Identity {
 
 impl<'p> FromPyObject<'p> for Identity {
     fn extract(obj: &'p PyAny) -> PyResult<Self> {
-        let result: &Self = obj.downcast_ref()?;
-        Ok(Self {
-            secret: result.secret.clone(),
-            keys: age::keys::Identity::from_buffer(result.secret.as_bytes())
-                .map_err(|_e| PageUsageError::py_err("Could not parse keys from secret!"))?,
-        })
+        let result: PyRef<Self> = obj.extract()?;
+        Self::new(result.secret.clone())
     }
 }
 
@@ -33,9 +28,8 @@ impl<'p> FromPyObject<'p> for Identity {
 impl Identity {
 
     #[new]
-    pub fn new(obj: &PyRawObject, secret: String) -> PyResult<()> {
-        obj.init(Self::from_secret(secret)?);
-        Ok(())
+    pub fn new(secret: String) -> PyResult<Self> {
+        Self::from_secret(secret)
     }
 
     #[staticmethod]

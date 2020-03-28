@@ -14,7 +14,7 @@ age = "0.4.0"
 secrecy = "0.6"
 
 [dependencies.pyo3]
-version = "0.8.5"
+version = "0.9.1"
 features = ["extension-module"]
 
 [package.metadata.maturin]
