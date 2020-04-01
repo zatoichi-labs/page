@@ -22,6 +22,6 @@ jobs:
     - name: Install dependencies
       run: pipx install maturin
     - name: Build
-      run: echo "nightly" > rust-toolchain;	maturin develop; rm rust-toolchain
+      run: echo "nightly" > rust-toolchain; pipx run maturin develop; rm rust-toolchain
     - name: Run tests
       run: pytest
