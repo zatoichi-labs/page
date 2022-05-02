@@ -1,5 +1,6 @@
 init:
 	pip install -r requirements.txt
+	pip install -r requirements-test.txt
 
 build:
 	echo "nightly" > rust-toolchain

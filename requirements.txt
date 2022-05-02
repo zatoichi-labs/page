@@ -1,6 +1,2 @@
 # Rust->Python build process
 maturin
-# Dev-only
-bumpversion
-pytest
-ipython
