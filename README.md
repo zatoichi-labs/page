@@ -1,12 +1,13 @@
-# page: Python Bindings for the age encryption tool
+# pyrageencrypt: Python Bindings for the age encryption tool
 
-age is a simple, secure and modern encryption tool with small explicit keys, no
-config options, and UNIX-style composability. The format specification is at
+AGE (actually good encryption) is a simple, secure and modern encryption tool
+with small explicit keys, no config options, and UNIX-style composability.
+The format specification is at
 [age-encryption.org/v1](https://age-encryption.org/v1).
 
-page is a Python library using the Rust implementation of the age tool. It is pronounced like the Japanese
+pyrageencrypt is a Python library using the Rust implementation of the age tool.
+It is pronounced with a hard "g" like the Japanese
 [パゲ](https://translate.google.com/#view=home&op=translate&sl=ja&tl=en&text=%E3%83%91%E3%82%B2)
-(with a hard g).
 
 To discuss the spec or other age related topics, please email
 [the mailing list](https://groups.google.com/d/forum/age-dev) at
@@ -21,10 +22,10 @@ The Rust implementation is available at
 
 ## Usage
 
-You can use page's encryption functions in two ways,
+You can use Python AGE encryption functions provided by the package in two ways,
 either using identity-based encryption:
 ```python
-from page import encrypt, decrypt, Identity
+from pyrageencrypt import encrypt, decrypt, Identity
 
 rc = "age1ppvqwzgdynzjmy04drg9h55xv0clhr4frtgnvy4uwkvk4jf4gu0sf63nar"
 id = Identity("""
@@ -37,7 +38,7 @@ assert msg == b"My Important Message"
 ```
 or, using simple passphrase-based encryption:
 ```python
-from page import encrypt, decrypt
+from pyrageencrypt import encrypt, decrypt
 
 encrypted_msg = encrypt(b"My Important Message", passphrase="My secret password")
 msg = decrypt(encrypted_msg, passphrase="My secret password")
@@ -50,7 +51,7 @@ Files can be encrypted to multiple recipients.
 Every recipient will be able to decrypt the file.
 
 ```python
-from page import encrypt, decrypt, Identity
+from pyrageencrypt import encrypt, decrypt, Identity
 
 id1 = Identity.generate()
 id2 = Identity.generate()
@@ -63,12 +64,10 @@ assert msg1 == msg2
 
 ## Installation
 
-You can install page using pip:
+You can install the package using pip:
 ```bash
-$ pip install page
+$ pip install pyrageencrypt
 ```
-
-Help from new packagers is very welcome.
 
 ## License
 

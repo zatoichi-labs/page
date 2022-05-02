@@ -9,7 +9,7 @@ use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3::wrap_pyfunction;
 
-create_exception!(page, PageUsageError, Exception);
+create_exception!(pyrageencrypt, PyrageencryptUsageError, Exception);
 
 #[pyclass]
 pub struct Identity {
@@ -34,14 +34,14 @@ impl Identity {
     #[staticmethod]
     pub fn from_secret(secret: String) -> PyResult<Self> {
         let keys = age::keys::Identity::from_buffer(secret.as_bytes())
-            .map_err(|_e| PageUsageError::py_err("Could not parse keys from secret!"))?;
+            .map_err(|_e| PyrageencryptUsageError::py_err("Could not parse keys from secret!"))?;
         Ok(Self { secret, keys })
     }
 
     #[staticmethod]
     pub fn from_file(filename: String) -> PyResult<Self> {
         let keys = age::keys::Identity::from_file(filename)
-            .map_err(|_e| PageUsageError::py_err("Could not parse keys from secret!"))?;
+            .map_err(|_e| PyrageencryptUsageError::py_err("Could not parse keys from secret!"))?;
         Ok(Self {
             secret: String::new(),
             keys,
@@ -55,7 +55,7 @@ impl Identity {
             .expose_secret()
             .to_owned();
         let keys = age::keys::Identity::from_buffer(secret.as_bytes())
-            .map_err(|_e| PageUsageError::py_err("Could not parse keys from secret!"))?;
+            .map_err(|_e| PyrageencryptUsageError::py_err("Could not parse keys from secret!"))?;
         Ok(Self { secret, keys })
     }
 
@@ -86,12 +86,12 @@ pub fn encrypt<'p>(
                 .map(|k| age::keys::RecipientKey::from_str(&k))
                 .collect();
             let keys =
-                keys.map_err(|_e| PageUsageError::py_err("Could not parse keys from string!"))?;
+                keys.map_err(|_e| PyrageencryptUsageError::py_err("Could not parse keys from string!"))?;
             age::Encryptor::with_recipients(keys)
         }
         (None, Some(passphrase)) => age::Encryptor::with_user_passphrase(Secret::new(passphrase)),
         _ => {
-            return Err(PageUsageError::py_err(
+            return Err(PyrageencryptUsageError::py_err(
                 "Must specify keyword arg of: passphrase or public_keys (but not both)",
             ))
         }
@@ -128,27 +128,27 @@ pub fn decrypt<'p>(
             d.decrypt(&Secret::new(passphrase), None)
         }
         (_, None, None) | (_, Some(_), Some(_)) => {
-            return Err(PageUsageError::py_err(
+            return Err(PyrageencryptUsageError::py_err(
                 "Must specify keyword arg of: passphrase or private_keys (but not both)",
             ))
         }
         _ => {
-            return Err(PageUsageError::py_err(
+            return Err(PyrageencryptUsageError::py_err(
                 "Mismatch between encryption type and supplied decryption key or passphrase",
             ))
         }
     }
-    .map_err(|_e| PageUsageError::py_err("Decryption didn't work!"))?;
+    .map_err(|_e| PyrageencryptUsageError::py_err("Decryption didn't work!"))?;
     let mut decrypted = vec![];
     reader
         .read_to_end(&mut decrypted)
-        .map_err(|_e| PageUsageError::py_err("Reading didn't work!"))?;
+        .map_err(|_e| PyrageencryptUsageError::py_err("Reading didn't work!"))?;
     Ok(PyBytes::new(py, decrypted.as_slice()))
 }
 
 #[pymodule]
-fn page(py: Python, module: &PyModule) -> PyResult<()> {
-    module.add("PageUsageError", py.get_type::<PageUsageError>())?;
+fn pyrageencrypt(py: Python, module: &PyModule) -> PyResult<()> {
+    module.add("PyrageencryptUsageError", py.get_type::<PyrageencryptUsageError>())?;
     module.add_wrapped(wrap_pyfunction!(encrypt))?;
     module.add_wrapped(wrap_pyfunction!(decrypt))?;
     module.add_class::<Identity>()?;

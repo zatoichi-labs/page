@@ -1,9 +1,9 @@
 import pytest
-from page import (
+from pyrageencrypt import (
     Identity,
     encrypt,
     decrypt,
-    PageUsageError,
+    PyrageencryptUsageError,
 )
 
 MESSAGE = "This is my super secret message!"
@@ -44,10 +44,10 @@ def test_encryption_passphrase():
 
 def test_errors():
     # Secret key format is invalid
-    with pytest.raises(PageUsageError):
+    with pytest.raises(PyrageencryptUsageError):
         Identity("Bad Key")
 
     skey = Identity(AGE_SK)
     # Must specify either passphrase or publickey
-    with pytest.raises(PageUsageError):
+    with pytest.raises(PyrageencryptUsageError):
         encrypt(MESSAGE.encode('utf-8'))

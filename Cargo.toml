@@ -1,12 +1,12 @@
 [package]
-name = "page"
+name = "pyrageencrypt"
 version = "0.1.0-alpha.4"
 authors = ["Zatoichi Labs <admin@zatoichi-labs.com>"]
 license = "Apache-2.0"
 edition = "2018"
 
 [lib]
-name = "page"
+name = "pyrageencrypt"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
@@ -19,15 +19,17 @@ features = ["extension-module"]
 
 [package.metadata.maturin]
 requires-python = ">=3.5,<4"
-project-url = ["https://github.com/zatoichi-labs/page"]
+project-url = ["https://github.com/zatoichi-labs/pyrageencrypt"]
 classifier = [
-    'Development Status :: 1 - Planning',
+    'Development Status :: 2 - Alpha',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: Apache Software License',
     'Natural Language :: English',
+    'Topic :: Security :: Cryptography',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
 ]
